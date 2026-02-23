@@ -12,6 +12,9 @@
   </p>
 
   <br />
+
+  <img width="4082" height="2412" alt="Screenshot 2026-02-23 at 15-34-23 Counter Clarity Studio" src="https://github.com/user-attachments/assets/a7b800d8-eca3-4e76-946e-970846dab3cd" />
+
 </div>
 
 ## ✨ Features
