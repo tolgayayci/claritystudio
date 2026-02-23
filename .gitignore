@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Supabase
+supabase/.temp/
+
+# Stacks backend
+stacks-backend/node_modules/
+stacks-backend/dist/
+stacks-backend/.env
+
+# PEM keys
+*.pem
+near-backend/

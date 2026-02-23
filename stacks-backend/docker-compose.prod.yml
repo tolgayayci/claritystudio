@@ -1,0 +1,67 @@
+services:
+  stacks-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clarity-studio-backend
+    restart: unless-stopped
+    expose:
+      - "3001"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - CLAUDE_SERVICE_URL=http://clarity-studio-claude:3002
+    networks:
+      - proxy
+      - clarity-internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+
+      # Router for api.claritystudio.app
+      - "traefik.http.routers.clarity-api.rule=Host(`api.claritystudio.app`)"
+      - "traefik.http.routers.clarity-api.entrypoints=websecure"
+      - "traefik.http.routers.clarity-api.tls=true"
+      - "traefik.http.routers.clarity-api.tls.certresolver=letsencrypt"
+
+      # Service port
+      - "traefik.http.services.clarity-api.loadbalancer.server.port=3001"
+
+      # CORS middleware
+      - "traefik.http.middlewares.clarity-cors.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST,DELETE"
+      - "traefik.http.middlewares.clarity-cors.headers.accesscontrolallowheaders=*"
+      - "traefik.http.middlewares.clarity-cors.headers.accesscontrolalloworiginlist=https://claritystudio.app,http://localhost:5173,http://localhost:3000"
+      - "traefik.http.middlewares.clarity-cors.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.clarity-cors.headers.addvaryheader=true"
+      - "traefik.http.routers.clarity-api.middlewares=clarity-cors"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  claude-service:
+    build: ./claude-service
+    container_name: clarity-studio-claude
+    restart: unless-stopped
+    expose:
+      - "3002"
+    volumes:
+      - claude-auth:/root/.claude
+    environment:
+      - NODE_ENV=production
+    networks:
+      - clarity-internal
+
+volumes:
+  claude-auth:
+    name: clarity-studio-claude-auth
+
+networks:
+  proxy:
+    external: true
+  clarity-internal:
+    name: clarity-studio-internal

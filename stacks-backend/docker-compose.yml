@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  claude-service:
+    build: ./claude-service
+    container_name: clarity-studio-claude
+    ports:
+      - "3002:3002"
+    volumes:
+      # Persist Claude Code auth across container restarts
+      - claude-auth:/root/.claude
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      # Optional: set ANTHROPIC_API_KEY here instead of using `claude login`
+      # - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+
+volumes:
+  claude-auth:
+    name: clarity-studio-claude-auth
+
+# Setup instructions:
+# 1. docker-compose up -d
+# 2. docker exec -it clarity-studio-claude claude login
+#    (visit the URL shown, paste back the auth code)
+# 3. The service is now ready at http://localhost:3002
+#
+# To use API key instead of login:
+# 1. Add ANTHROPIC_API_KEY to your .env file
+# 2. Uncomment the environment line above
+# 3. docker-compose up -d
